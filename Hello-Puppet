@@ -1,0 +1,20 @@
+The term Puppet is often used as a shorthand for a collection of tools and services that work in concert to help define your infrastructure configuration and then automate the process of bringing the systems into their desired state and keeping them there.
+
+
+Using Puppet, you define a desired state for all systems in your infrastructure. Once this state is defined, it automates the process of bringing your systems into that state and keeping them there.
+This desired state for your systems is written in Puppet code, a domain specific language (DSL).
+
+This infrastructure as code approach means that users concerned with version control, compliance, continuous integration and deployment, and testing can easily fold infrastructure into their development and release workflow.
+
+Puppet code is a declarative language, which means that you describe only the desired state for your systems, not the steps needed to get there. Once you've specified in code those aspects of a system you want Puppet to manage, an agent service running in the background makes any changes needed to bring the system into compliance with the desired state.
+
+A declarative approach requires that you think about the systems in your infrastructure differently than you would if you were using scripts, golden images, or runbooks. You can focus on what your infrastructure can do for you rather than how you're going to get there.
+
+The declarative Puppet language gives you a single syntax for describing desired state across Windows and Unix-like operating systems, network devices, and containers. You don't have to switch languages and toolsets every time you start work on a new system. Learning Puppet gives you a skillset that can be carried across projects and roles.
+
+With a master-agent architecture, there's no need to connect to systems individually to make changes. Once the agent service is running on a system, it periodically establishes a secure connection to the master, fetches any code you've applied to it, and makes the changes necessary to bring the system in line with the desired state. The fact that centralized control is built in from Puppet's foundations makes monitoring and compliance much easier.
+
+The Puppet agent runs on every system that you want Puppet to manage. The agent serves as the bridge between the system where it's installed and the Puppet master server. The agent communicates in two directions: out to the master to see how its system should be configured, and then inward to native system tools to check the actual state of the system and to make changes to bring it in line with the desired state.
+
+
+When you install the Puppet agent you get a set of command-line tools that help you interact directly with a system in the same way the Puppet agent does. Using these tools will help you understand how the Puppet agent sees and modifies the state of the system where it's running.
