@@ -1,0 +1,54 @@
+Puppet server.
+
+Bolt is an open-source remote task runner that automates the manual work that you do to maintain your infrastructure. Use Bolt to automate tasks that you need to perform on your infrastructure on an ad hoc basis, such as troubleshooting, deploying an application, stopping and starting services, and upgrading a database schema. Bolt connects directly to remote nodes with SSH or WinRM, so you are not required to install any agent software.
+
+It can easily leverage existing scripts that you have written in any language and allow you to execute them on remote nodes in parallel.
+
+Over time, you can then convert configuration tasks to Puppet code for long-term management of your infrastructure. Even in that scenario, Bolt is a powerful tool for performing tasks that are not as easily done with the Puppet agent, such as stopping a database server, performing a schema upgrade, and restarting the server.
+
+As described in the previous quest, Bolt is a task runner that enables you to invoke commands on one or more target nodes. It is well-suited to performing actions in an ad hoc manner instead of managing a node on a long-term basis.
+
+Install Bolt
+
+Task 1:
+
+Pre-built Bolt packages are available for various Red Hat Enterprise Linux, SUSE, Debian, Ubuntu, and Fedora distributions, as well as Windows and macOS. The Learning VM is based on a CentOS (Red Hat Enterprise Linux equivalent) 7 image, so run the following command to configure the Puppet YUM repository:
+
+rpm -Uvh https://yum.puppet.com/puppet6/puppet6-release-el-7.noarch.rpm
+NOTE: If your Learning VM is configured with a host-only network, the previous command will fail, but the puppet-bolt package has been cached for convenience.
+
+Now run this command to install Bolt:
+
+yum install puppet-bolt
+
+
+Verify the Bolt installation
+
+Task 2:
+
+Now that you have installed Bolt successfully, let's run some commands to verify that it works correctly.
+
+bolt --help
+
+bolt --version
+Task 3:
+
+Bolt provides a command-line interface for running commands, scripts, tasks and plans on the local machine or remote nodes. Now let's practice running some simple commands:
+
+bolt command run 'free -th' --nodes localhost
+
+
+bolt command run 'free -th' --nodes localhost
+
+bolt command run 'cat /etc/hosts' --nodes docker://bolt.puppet.vm
+
+bolt command run hostname --nodes docker://bolt.puppet.vm
+
+Perhaps you want to generate machine-parseable output. That is also possible by using the --format option to the bolt command like so:
+
+bolt --format json command run 'cat /etc/hosts' --nodes docker://bolt.puppet.vm
+
+
+Perhaps you want to generate machine-parseable output. That is also possible by using the --format option to the bolt command like so:
+
+bolt --format json command run 'cat /etc/hosts' --nodes docker://bolt.puppet.vm
