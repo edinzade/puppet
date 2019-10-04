@@ -1,0 +1,64 @@
+Task 1:
+
+To get started, use the bolt tool that was introduced in the previous quest. Copy and run the following command to load the agent installer from the master and run it on the agent system:
+
+bolt command run "sh -c 'curl -k https://learning.puppetlabs.vm:8140/packages/current/install.bash | sudo bash'" --nodes docker://hello.puppet.vm
+
+
+As noted above, the Puppet agent comes with a set of supporting tools you can use to explore your system. Now that the agent is installed, use these tools to see what they can teach you about how Puppet works.
+
+One of Puppet's core concepts is the resource abstraction layer. For Puppet, each aspect of the system you want to manage (such as a user, file, service, or package) is represented in code as a unit called a resource. The puppet resource tool lets you view and modify these resources directly.
+
+ssh learning@hello.puppet.vm
+
+sudo puppet resource file /tmp/test
+
+sudo puppet resource file /tmp/test
+
+The type is the kind of thing the resource describes. It can be a core type like a user, file, service, or package, or a custom type that you have implemented yourself or installed from a module.
+
+
+Use the puppet resource tool to see how this change is represented in Puppet's resource syntax:
+
+sudo puppet resource file /tmp/test
+
+Task 4:
+
+Next, use the puppet resource tool to add some content to our file.
+
+Running puppet resource with a parameter=value argument tells Puppet to modify the resource on the system to match the value you set. (Note that while this is a great way to test out changes in a development environment, it's not a good way to manage production infrastructure.
+
+Run the following command:
+
+sudo puppet resource file /tmp/test content='Hello Puppet!'
+Puppet will display some output as it checks the hash of the existing content against the new content you provided. When it sees that the hashes don't match, it sets the file's content to the value of the command's content parameter.
+
+Look at the file to see the modified content by running:
+
+cat /tmp/test
+
+
+Types and Providers
+
+This translation back and forth between the state of the system and Puppet's resource syntax is the heart of Puppet's resource abstraction layer. To get a better understanding of how this works, let's take a look at another resource type, the package.
+
+
+As an example, run the following command to install the package for the Apache webserver httpd:
+
+sudo puppet resource package httpd
+
+
+Each resource type has a set of providers. A provider is the translation layer that sits between Puppet's resource representation and the native system tools it uses to discover and modify the underlying system state. Each resource type generally has a variety of different providers.
+
+sudo puppet resource package bogus-package ensure=present
+
+
+sudo puppet resource package httpd ensure=present
+This time, Puppet installs the package. The value of the ensure parameter shows you the specific version of the installed package:
+
+package { 'httpd':
+  ensure => '2.4.6-45.el7.centos',
+}
+When you don't specify a version of the package to install, Puppet defaults to installing the latest available version and displays this version number as the value of the ensure attribute.
+
+Now that you've had a chance to explore this system with the newly installed Puppet agent, exit to return to the Puppet master before you continue to the next quest.
