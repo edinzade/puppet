@@ -1,0 +1,46 @@
+PUPPET LEARNING
+
+
+The puppet resource command you explored in the previous quest let you see a system the way Puppet does—through the site. abstraction layer. While exploring and manipulating resources through Puppet's command line tools are useful, the real value of the resource abstraction layer is to provide a single common language for your Puppet master to manage all the systems in your infrastructure.
+
+
+The agent/master architecture
+
+In this architecture, each managed node in your infrastructure runs a Puppet agent service. One or more servers (depending on the size and complexity of your infrastructure) act as Puppet master(s) and run the Puppet server service to handle communication with your agents. In a default monolithic master installation, the Puppet master server also hosts several supporting services such as the PE console services and PuppetDB. In larger deployments these services may be distributed across other servers to improve performance and provide redundancy.
+
+The Puppet agent begins a Puppet run by sending a catalog request to the Puppet master. This request includes some information about the agent system provided by a tool called Facter.
+
+The Puppet master uses this information from Facter along with your Puppet code to compile a catalog that tells the agent exactly how the resources on its system should be configured.
+
+Your Puppet master keeps a copy of the Puppet codebase you've created to define the desired state for systems in your infrastructure. This Puppet code is primarily made up of resource declarations like the ones you saw in the previous quest. While your Puppet code's final purpose is to define resources, it also includes some language features such as variables, classes, and conditionals that can give you control over which resources you want on a system and how their parameters are set. The master parses this code to create a catalog. The catalog is the final list of system resources that define the desired state for an agent node.
+
+The Puppet master sends this catalog back to the Puppet agent, which then uses its providers to check if the desired state of each resource defined in the catalog matches the actual state of the resource on the system. If any differences are found, the providers help Puppet implement whatever changes are necessary to bring the actual state of the system into line with the desired state defined in the catalog.
+Finally, the Puppet agent generates a report that includes information about unchanged resources, successful changes, and any errors it may have encountered during the run. It sends this report back to the Puppet master, which stores it in PuppetDB and makes it available via the PE console's web GUI.
+
+All communications between an agent and master happen over SSL. Before the master communicates with an agent, it needs a way to validate that the agent node is authentic. This prevents unauthorized connections from spoofing an agent node to access sensitive data that might be included in a catalog. While Puppet does provide options for encrypting data within a catalog, it's best to control which systems can make a catalog request in the first place.
+
+First, try to trigger a Puppet agent run without your agent system's certificate signed. The agent will attempt to contact the Puppet master, but its request will be rejected.
+sudo puppet agent -t
+You see that the Puppet agent loads the facts it needs to share the details of the system where it's running with the Puppet master.
+Finally, the Puppet agent applies the catalog. Normally after this step, you would see a list of all the changes made by the agent. In this case, however, the Puppet master didn't find any Puppet code to apply to your agent node, and it didn't make any changes (other than those involved in pluginsync) during this run.
+When the Puppet server service on the Puppet master receives a catalog request with a valid certificate, it begins a process called node classification to determine what Puppet code will be compiled to generate a catalog for the agent making the request.
+
+When the Puppet server service on the Puppet master receives a catalog request with a valid certificate, it begins a process called node classification to determine what Puppet code will be compiled to generate a catalog for the agent making the request.
+There are three different ways to handle node classification.
+1.	The site.pp manifest is a special file on the master where you can write node definitions. This is the method we'll be using now and in several of the following quests. It gives you the most direct view of how node classification works.
+2.	The PE console includes a GUI node classifier that makes it easy to manage node groups and classification without editing code directly. Though this is a very efficient way to manage node classification, you'll understand it best after you're familiar with some of the underlying Puppet concepts.
+3.	Finally, if you want to customize node classification, you can create your own external node classifier. An external node classifier can be any executable that takes the name of a node as an argument and returns a YAML file describing the Puppet code to be applied to that node. This is an advanced topic and is not covered in this guide.
+4.	When a Puppet agent contacts the Puppet master, the master checks for any node definitions in the site.ppmanifest that match the agent system's name. In the Puppet world, the term "node" is used to mean any system or device in your infrastructure, so a node definition defines how Puppet should manage a given system.
+
+It will help to understand what a node definition looks like with an example. Go ahead and open your site.ppmanifest:
+vim /etc/puppetlabs/code/environments/production/manifests/site.pp
+
+Add the following notify resource to your node definition. (You'll probably learn Puppet code syntax more quickly if you type out your code manually, but if you prefer to paste content into Vim, you can hit ESC to enter command mode and type :set paste to disable the automatic formatting. Press i to return to insert mode before pasting your text.)
+node 'agent.puppet.vm' {
+  notify { 'Hello Puppet!': }
+}
+Remember, use ESC then :wq to save your file and exit Vim.
+
+We began this quest with a discussion of Puppet's agent/master architecture and the communication between the Puppet master and an agent. The agent begins this process by sending a catalog request to the master. The master first checks to see if the agent has a valid certificate. If the certificate is valid, the master consults several methods of classification to begin the process of catalog compilation. In this quest, we used a node definition in the site.ppmanifest to classify our node. The master then compiles a catalog that it returns to the agent. The agent checks if the current state of its system matches the desired state described in the catalog and makes any changes necessary to bring it in line. For the sake of simplicity in this quest, we used a notify resource to display a message rather than make any changes to the system. Once the agent has applied the catalog (or failed to apply the catalog if an error occurs), it sends a report of the run's results back to the master, which stores it in the PuppetDB.
+Now that we've introduced the resource abstraction layer, the agent/master communication involved in a Puppet run, and a simple example of classification with the site.pp manifest, you've seen the foundations that the rest of Puppet is built on.
+
