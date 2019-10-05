@@ -1,0 +1,35 @@
+Manifests
+
+Imagination is a force that can actually manifest a reality.
+
+-James Cameron
+
+At its simplest, a Puppet manifest is Puppet code saved to a file with the .pp extension. 
+This code is written in the Puppet domain specific language (DSL). 
+You already saw some examples of this DSL as you learned about resources.
+The Puppet DSL includes resource declarations, along with a set of other language features, that let you control 
+which resources are applied on a system and what values are set for those resources' parameters.
+
+Task 1:
+
+Go ahead and ssh to the node we've created for this quest. Remember,
+
+the password for this and all the agent systems you'll use in this Quest Guide is puppet.
+
+ssh learning@cowsay.puppet.vm
+Create a throw-away manifest in our /tmp/ directory to see how this works.
+
+vim /tmp/hello.pp
+Use the same notify resource declaration you included in your site.pp in the previous quest:
+
+notify { 'Hello Puppet!': }
+(Remember, use ESC then :wq to save and exit.)
+
+Rather than classifying this node on the master and triggering a Puppet agent run, 
+apply this manifest directly with the puppet apply tool. You can use the puppet apply tool to test 
+Puppet code in a manifest just like you can use the puppet resource tool to explore and modify resources directly.
+
+sudo puppet apply /tmp/hello.pp 
+Now you know how to save Puppet code to a file, but how do you bridge the gap between this saved 
+Puppet code and the site.pp manifest where you define node classification? The first step is to organize your 
+Puppet code into classes and modules.
